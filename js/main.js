@@ -46,7 +46,7 @@ function getArray () {
   // Цикл для генерации 25 объектов и добавления их в массив objects
   for (var i = 0; i < 25; i++) {
     var item = {
-      url: `photos/${photoIndexArray[i]}.jpg`,
+      url: 'photos/' + photoIndexArray[i] + '.jpg',
       description: '',
       likes: getRandomNumber (15, 200),
       comments: getCommentArray(getRandomNumber(1, 2))
