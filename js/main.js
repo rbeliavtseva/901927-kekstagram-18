@@ -1,26 +1,26 @@
 'use strict';
 
 var commentsArray = ['Всё отлично!',
-'В целом всё неплохо. Но не всё.',
-'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
-'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
-'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
-'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'];
+  'В целом всё неплохо. Но не всё.',
+  'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
+  'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
+  'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
+  'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'];
 
 // Функция получения рандомного числа в заданном диапазоне
-function getRandomNumber (min, max) {
+function getRandomNumber(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 // Функция получения рандомного массива чисел в заданном диапазоне
-function getRandomNumberArray (min, max) {
+function getRandomNumberArray(min, max) {
   var intArray = [];
   // Заполняем массив
   while (intArray.length < max) {
     // Получение рандомного числа в заданном диапазоне из предыдущей функции
-    var randomNumber = getRandomNumber (min, max);
+    var randomNumber = getRandomNumber(min, max);
     // Проверяем есть ли число в массиве. Если уже есть - переходим к следующей итерации цикла
     if (intArray.includes(randomNumber)) continue;
     intArray.push(randomNumber);
@@ -29,38 +29,38 @@ function getRandomNumberArray (min, max) {
 }
 
 // Функция получения массива случайных комментариев
-function getCommentArray (numberOfComments) {
+function getCommentArray(numberOfComments) {
   var comments = [];
   // Заполняем массив
   for (var i = 0; i < numberOfComments; i++) {
-    var commentIndex = getRandomNumber (0, commentsArray.length - 1);
+    var commentIndex = getRandomNumber(0, commentsArray.length - 1);
     comments.push(commentsArray[commentIndex]);
   }
   return comments;
 }
 
 // Функцию генерирует массив объектов
-function getArray () {
+function getArray() {
   var objects = [];
-  var photoIndexArray = getRandomNumberArray (1, 25);
+  var photoIndexArray = getRandomNumberArray(1, 25);
   // Цикл для генерации 25 объектов и добавления их в массив objects
   for (var i = 0; i < 25; i++) {
     var item = {
       url: 'photos/' + photoIndexArray[i] + '.jpg',
       description: '',
-      likes: getRandomNumber (15, 200),
+      likes: getRandomNumber(15, 200),
       comments: getCommentArray(getRandomNumber(1, 2))
     };
-    objects.push (item);
+    objects.push(item);
   }
   return objects;
-};
+}
 
 // Получаем шаблон
 var pictureTemplate = document.querySelector('#picture').content.querySelector('a');
 
 // Функция генерации DOM-элемента
-function createPictureItem (item) {
+function createPictureItem(item) {
   // Клонируем структуру из шаблона
   var element = pictureTemplate.cloneNode(true);
   // Выбираем элементы и заполняем их элементами массива
@@ -74,7 +74,7 @@ function createPictureItem (item) {
 }
 
 // Функция для заполнения фрагмента
-function createPictureItemArray (array) {
+function createPictureItemArray(array) {
   // Создаем фрагмент
   var pictureFragment = document.createDocumentFragment();
   // Заполняем фрагмент сгенерированными элементами
@@ -88,6 +88,6 @@ function createPictureItemArray (array) {
 var picturesContainer = document.querySelector('.pictures');
 
 // Функция для вставки фрагмента в разметку
-function setPictures () {
+function setPictures() {
   picturesContainer.appendChild(createPictureItemArray(getArray ()));
 }
