@@ -15,15 +15,16 @@ function getRandomNumber(min, max) {
 }
 
 // Функция получения рандомного массива чисел в заданном диапазоне
-function getRandomNumberArray(min, max) {
+function getRandomNumberArray(numberOfGeneratedNumbers, startNumberRange, endNumberRange) {
   var intArray = [];
   // Заполняем массив
-  while (intArray.length < max) {
+  while (intArray.length < numberOfGeneratedNumbers) {
     // Получение рандомного числа в заданном диапазоне из предыдущей функции
-    var randomNumber = getRandomNumber(min, max);
+    var randomNumber = getRandomNumber(startNumberRange, endNumberRange);
     // Проверяем есть ли число в массиве. Если уже есть - переходим к следующей итерации цикла
-    if (intArray.includes(randomNumber)) continue;
-    intArray.push(randomNumber);
+    if (!intArray.includes(randomNumber)) {
+      intArray.push(randomNumber);
+    }
   }
   return intArray;
 }
@@ -39,12 +40,13 @@ function getCommentArray(numberOfComments) {
   return comments;
 }
 
-// Функцию генерирует массив объектов
-function getArray() {
+// Функция генерирует массив объектов
+function getPhotoCardsArray() {
   var objects = [];
-  var photoIndexArray = getRandomNumberArray(1, 25);
+  var numberOfObjects = 25;
+  var photoIndexArray = getRandomNumberArray(numberOfObjects, 1, 25);
   // Цикл для генерации 25 объектов и добавления их в массив objects
-  for (var i = 0; i < 25; i++) {
+  for (var i = 0; i < numberOfObjects; i++) {
     var item = {
       url: 'photos/' + photoIndexArray[i] + '.jpg',
       description: '',
@@ -89,5 +91,5 @@ var picturesContainer = document.querySelector('.pictures');
 
 // Функция для вставки фрагмента в разметку
 function setPictures() {
-  picturesContainer.appendChild(createPictureItemArray(getArray ()));
+  picturesContainer.appendChild(createPictureItemArray(getPhotoCardsArray()));
 }
