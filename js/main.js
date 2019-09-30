@@ -40,6 +40,15 @@ function getCommentArray(numberOfComments) {
   return comments;
 }
 
+function createPhotoCard(photoIndexArray, i) {
+  return {
+    url: 'photos/' + photoIndexArray[i] + '.jpg',
+    description: '',
+    likes: getRandomNumber(15, 200),
+    comments: getCommentArray(getRandomNumber(1, 2))
+  };
+}
+
 // Функция генерирует массив объектов
 function getPhotoCardsArray() {
   var objects = [];
@@ -47,13 +56,7 @@ function getPhotoCardsArray() {
   var photoIndexArray = getRandomNumberArray(numberOfObjects, 1, 25);
   // Цикл для генерации 25 объектов и добавления их в массив objects
   for (var i = 0; i < numberOfObjects; i++) {
-    var item = {
-      url: 'photos/' + photoIndexArray[i] + '.jpg',
-      description: '',
-      likes: getRandomNumber(15, 200),
-      comments: getCommentArray(getRandomNumber(1, 2))
-    };
-    objects.push(item);
+    objects.push(createPhotoCard(photoIndexArray, i));
   }
   return objects;
 }
@@ -93,3 +96,10 @@ var picturesContainer = document.querySelector('.pictures');
 function setPictures() {
   picturesContainer.appendChild(createPictureItemArray(getPhotoCardsArray()));
 }
+
+// Функция инициализации
+function init() {
+  setPictures();
+}
+
+init();
