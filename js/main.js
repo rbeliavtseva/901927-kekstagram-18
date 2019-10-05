@@ -178,4 +178,5 @@ function hide() {
 
 init();
 showPicture();
+fillBigCard(arrayOfObjects[1]);
 hide();
