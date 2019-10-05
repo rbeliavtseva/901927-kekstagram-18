@@ -178,3 +178,4 @@ function hide() {
 
 init();
 showPicture();
+hide();
