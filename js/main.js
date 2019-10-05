@@ -7,6 +7,18 @@ var commentsArray = ['Всё отлично!',
   'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'];
 
+var namesArray = ['Артем', 'Борис', 'Афанасий', 'Кекс', 'Георгий', 'Саша'];
+
+// Функция генерации объекта комментария
+function getPhotoComment() {
+  var photoCommentObject = {
+    avatar: 'img/avatar-' + getRandomNumber(1, 6) + '.svg',
+    message: commentsArray[getRandomNumber(0, commentsArray.length - 1)],
+    name: namesArray[getRandomNumber(0, namesArray.length - 1)]
+  };
+  return photoCommentObject;
+}
+
 // Функция получения рандомного числа в заданном диапазоне
 function getRandomNumber(min, max) {
   min = Math.ceil(min);
@@ -34,12 +46,12 @@ function getCommentArray(numberOfComments) {
   var comments = [];
   // Заполняем массив
   for (var i = 0; i < numberOfComments; i++) {
-    var commentIndex = getRandomNumber(0, commentsArray.length - 1);
-    comments.push(commentsArray[commentIndex]);
+    comments.push(getPhotoComment());
   }
   return comments;
 }
 
+// Функция генерации карточки фото
 function createPhotoCard(photoIndexArray, i) {
   return {
     url: 'photos/' + photoIndexArray[i] + '.jpg',
@@ -92,14 +104,79 @@ function createPictureItemArray(array) {
 // Получаем контейнер для фото
 var picturesContainer = document.querySelector('.pictures');
 
+var arrayOfObjects;
+
 // Функция для вставки фрагмента в разметку
 function setPictures() {
-  picturesContainer.appendChild(createPictureItemArray(getPhotoCardsArray()));
+  picturesContainer.appendChild(createPictureItemArray(arrayOfObjects));
 }
 
 // Функция инициализации
 function init() {
+  arrayOfObjects = getPhotoCardsArray();
   setPictures();
 }
 
+// Показываем большое изображение
+var bigPicture = document.querySelector('.big-picture');
+
+function showPicture() {
+  bigPicture.classList.remove('hidden');
+}
+
+// Функция заполнения увеличенной карточки фотографии
+function fillBigCard(arrayItem) {
+  // Отображаем большую фотографию
+  var bigImage = bigPicture.querySelector('.big-picture__img').children[0];
+  bigImage.src = arrayItem.url;
+  // Отображаем количество лайков
+  var likesCount = bigPicture.querySelector('.likes-count');
+  likesCount.textContent = arrayItem.likes;
+  // Отображаем количество комментариев
+  var commentsCount = bigPicture.querySelector('.social__comment-count');
+  commentsCount.textContent = arrayItem.comments.length;
+  // Создаем фрагмент
+  var bigPictureFragment = document.createDocumentFragment();
+  // Отображаем комментарии
+  var socialComments = bigPicture.querySelector('.social__comments');
+  socialComments.innerHTML = '';
+  for (var i = 0; i < arrayItem.comments.length; i++) {
+    bigPictureFragment.appendChild(generateSocialComment(arrayItem.comments[i]));
+  }
+  // Вставляем фрагмент в разметку
+  socialComments.appendChild(bigPictureFragment);
+}
+
+function generateSocialComment(comment) {
+  // Создание элемента списка
+  var newListElement = document.createElement('li');
+  newListElement.className = 'social__comment';
+  // Создание элемента img и добавление атрибутов
+  var newImageElement = document.createElement('img');
+  newImageElement.className = 'social__picture';
+  newImageElement.src = comment.avatar;
+  newImageElement.alt = comment.name;
+  newImageElement.width = 35;
+  newImageElement.height = 35;
+  // Создание элемента p и запись текста комментария
+  var newCommentElement = document.createElement('p');
+  newCommentElement.className = 'social__text';
+  newCommentElement.textContent = comment.message;
+  // Добавление элементов img и p в родительский элемент li
+  newListElement.appendChild(newImageElement);
+  newListElement.appendChild(newCommentElement);
+  return newListElement;
+}
+
+// Прячем блоки счётчика комментариев и загрузки новых комментариев
+function hide() {
+  var commentsLoader = bigPicture.querySelector('.comments-loader');
+  var commentsCount = bigPicture.querySelector('.social__comment-count');
+  commentsCount.classList.add('visually-hidden');
+  commentsLoader.classList.add('visually-hidden');
+}
+
 init();
+showPicture();
+fillBigCard(arrayOfObjects[1]);
+hide();
