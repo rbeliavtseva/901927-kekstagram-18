@@ -191,6 +191,7 @@ uploadField.addEventListener('change', function () {
   document.addEventListener('keydown', onPopupEscPress);
   effectLevel.classList.add('hidden');
   scaleControlValue.value = '100%';
+  addAllEventListeners();
   addRadioEventListeners();
 });
 
@@ -209,6 +210,7 @@ var closePopup = function () {
   imageUpload.classList.add('hidden');
   uploadField.value = '';
   document.removeEventListener('keydown', onPopupEscPress);
+  removeAllEventListeners();
   removeRadioEventListeners();
   clearDefault();
   if (imagePreview.classList.length === 2) {
@@ -310,16 +312,16 @@ var sliderPin = document.querySelector('.effect-level__pin');
 var levelLine = document.querySelector('.effect-level__line');
 var PIN_POSITION_MAX = 450;
 
-// Отслеживает событие 'mouseup' на ползунке слайдера
-sliderPin.addEventListener('mouseup', function (evt) {
+// Функция рассчитывает позицию ползунка и применяет фильтр
+var getPosition = function (evt) {
   // Считывается позиция относительно levelLine
   var pinCoords = evt.clientX;
-  var shift = pinCoords - levelLine.getBoundingClientRect().x;
+  var shift = pinCoords - levelLine.getBoundingClientRect().left;
   // Рассчитываем пропорцию
   var position = shift / PIN_POSITION_MAX;
   // Применение глубины фильтра пропорционально позиции ползунка
   applyFilterLevel(filters[checkedValue].min, filters[checkedValue].max, filters[checkedValue].style, position, filters[checkedValue].postFix);
-});
+};
 
 // Функция рассчета глубины фильтра
 var applyFilterLevel = function (minFilterValue, maxFilterValue, styleName, positionValue, postFix) {
@@ -339,26 +341,25 @@ var MIN = 25;
 var STEP = 25;
 var MAX = 100;
 
-// Отслеживает клик по кнопке "-"
-scaleControlSmaller.addEventListener('click', function () {
-  // Из строки текущее значение масштаба
+// Функция уменьшает картинку
+var changeScaleSmaller = function () {
   var currentValue = parseInt(scaleControlValue.value.substr(0, scaleControlValue.value.length - 1), 10);
   if (currentValue > MIN) {
     var newValue = currentValue - STEP;
     scaleControlValue.value = newValue + '%';
     innerImage.style.transform = 'scale(' + newValue / 100 + ')';
   }
-});
+};
 
-// Отслеживает клик по кнопке "+"
-scaleControlBigger.addEventListener('click', function () {
+// Функция увеличивает картинку
+var changeScaleBigger = function () {
   var currentValue = parseInt(scaleControlValue.value.substr(0, scaleControlValue.value.length - 1), 10);
   if (currentValue < MAX) {
     var newValue = currentValue + STEP;
     scaleControlValue.value = newValue + '%';
     innerImage.style.transform = 'scale(' + newValue / 100 + ')';
   }
-});
+};
 
 // Сбрасывает вид изображения до исходного состояния
 var clearDefault = function () {
@@ -388,16 +389,17 @@ var findDuplicateHashtags = function (hashtags, hashtag) {
   return count;
 };
 
-// Отслеживаем событие ввода хэштегов
-textHashtags.addEventListener('input', function () {
+// Функция валидации хэштегов
+var checkHashtagValidity = function () {
   hashtagValue = textHashtags.value;
   hashtagArray = hashtagValue.split(' ');
+  textHashtags.setCustomValidity('');
   if (hashtagArray.length <= 5) {
     for (var i = 0; i < hashtagArray.length; i++) {
-      if (hashtagArray[i].length < 2 && hashtagArray[i].substr(0, 1) === '#') {
+      if (hashtagArray[i].length < 2 && hashtagArray[i][0] === '#') {
         textHashtags.setCustomValidity('Хэш-тег не может состоять только из одной решётки');
         return;
-      } else if (hashtagArray[i].substr(0, 1) !== '#') {
+      } else if (hashtagArray[i][0] !== '#') {
         textHashtags.setCustomValidity('Хэш-тег должен начинаться с решётки');
         return;
       } else if (hashtagArray[i].split('#').length > 1) {
@@ -409,14 +411,32 @@ textHashtags.addEventListener('input', function () {
       } else if (hashtagArray[i].length > 20) {
         textHashtags.setCustomValidity('Максимальная длина одного хэш-тега 20 символов');
         return;
-      } else {
-        textHashtags.setCustomValidity('');
       }
     }
   } else {
     textHashtags.setCustomValidity('Нельзя использовать больше пяти хэш-тегов');
   }
-});
+};
+
+// Функция добавляет все обработчики событий
+var addAllEventListeners = function () {
+  // Отслеживает событие 'mouseup' на ползунке слайдера
+  sliderPin.addEventListener('mouseup', getPosition);
+  // Отслеживает клик по кнопке "-"
+  scaleControlSmaller.addEventListener('click', changeScaleSmaller);
+  // Отслеживает клик по кнопке "+"
+  scaleControlBigger.addEventListener('click', changeScaleBigger);
+  // Отслеживаем событие ввода хэштегов
+  textHashtags.addEventListener('input', checkHashtagValidity);
+};
+
+// Функция удаляет все обработчики событий
+var removeAllEventListeners = function () {
+  sliderPin.removeEventListener('mouseup', getPosition);
+  scaleControlSmaller.removeEventListener('click', changeScaleSmaller);
+  scaleControlBigger.removeEventListener('click', changeScaleBigger);
+  textHashtags.removeEventListener('input', checkHashtagValidity);
+};
 
 init();
 
