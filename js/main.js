@@ -191,6 +191,7 @@ uploadField.addEventListener('change', function () {
   document.addEventListener('keydown', onPopupEscPress);
   effectLevel.classList.add('hidden');
   scaleControlValue.value = '100%';
+  addRadioEventListeners();
 });
 
 // Функция закрытия по клавише Esc, не срабатывает, когда фокус на поле хэштегов
@@ -208,6 +209,8 @@ var closePopup = function () {
   imageUpload.classList.add('hidden');
   uploadField.value = '';
   document.removeEventListener('keydown', onPopupEscPress);
+  removeRadioEventListeners();
+  clearDefault();
   if (imagePreview.classList.length === 2) {
     imagePreview.classList.remove(imagePreview.classList[1]);
   }
@@ -262,21 +265,32 @@ var filters = {
   }
 };
 
-// Цикл проходится по всем радиокнопкам, отслеживая нажатие
-for (var i = 0; i < effectsRadio.length; i++) {
-  effectsRadio[i].addEventListener('click', function () {
-    checkedValue = document.querySelector('input[type="radio"]:checked').value;
-    // Проверяет количество классов на элементе и оставляет лишь один
-    if (innerImage.classList.length === 2) {
-      innerImage.classList.remove(innerImage.classList[1]);
-      toggleScale(checkedValue);
-      applyFilter(checkedValue);
-    } else {
-      toggleScale(checkedValue);
-      applyFilter(checkedValue);
-    }
-  });
-}
+// Функция проверяет количество классов на элементе и добавляет фильтры
+var onRadioClick = function (evt) {
+  checkedValue = evt.target.value;
+  if (innerImage.classList.length === 2) {
+    innerImage.classList.remove(innerImage.classList[1]);
+    toggleScale(checkedValue);
+    applyFilter(checkedValue);
+  } else {
+    toggleScale(checkedValue);
+    applyFilter(checkedValue);
+  }
+};
+
+// Функция создает обработчик события для всех кнопок
+var addRadioEventListeners = function () {
+  for (var i = 0; i < effectsRadio.length; i++) {
+    effectsRadio[i].addEventListener('click', onRadioClick);
+  }
+};
+
+// Функция удаляет обработчик события для всех кнопок
+var removeRadioEventListeners = function () {
+  for (var i = 0; i < effectsRadio.length; i++) {
+    effectsRadio[i].removeEventListener('click', onRadioClick);
+  }
+};
 
 // Функция выполняет проверку: если фильтр Оригинал, то убирает ползунок
 function toggleScale(selectedValue) {
@@ -300,7 +314,7 @@ var PIN_POSITION_MAX = 450;
 sliderPin.addEventListener('mouseup', function (evt) {
   // Считывается позиция относительно levelLine
   var pinCoords = evt.clientX;
-  var shift = pinCoords - (levelLine.parentNode.offsetLeft + levelLine.offsetLeft);
+  var shift = pinCoords - levelLine.getBoundingClientRect().x;
   // Рассчитываем пропорцию
   var position = shift / PIN_POSITION_MAX;
   // Применение глубины фильтра пропорционально позиции ползунка
@@ -346,6 +360,15 @@ scaleControlBigger.addEventListener('click', function () {
   }
 });
 
+// Сбрасывает вид изображения до исходного состояния
+var clearDefault = function () {
+  innerImage.style.transform = 'scale(1)';
+  if (innerImage.classList.length === 1) {
+    innerImage.classList.remove(innerImage.classList[0]);
+  }
+  innerImage.style.filter = 'none';
+};
+
 /*
 Валидация хэштегов
 */
@@ -356,7 +379,7 @@ var hashtagArray = [];
 // Функция находит два одинаковых элемента в массиве хэштегов
 var findDuplicateHashtags = function (hashtags, hashtag) {
   var count = 0;
-  for (i = 0; i < hashtags.length; i++) {
+  for (var i = 0; i < hashtags.length; i++) {
     // Поиск нечувствителен к регистру
     if (hashtags[i].toLowerCase() === hashtag.toLowerCase()) {
       count++;
@@ -370,17 +393,22 @@ textHashtags.addEventListener('input', function () {
   hashtagValue = textHashtags.value;
   hashtagArray = hashtagValue.split(' ');
   if (hashtagArray.length <= 5) {
-    for (i = 0; i < hashtagArray.length; i++) {
+    for (var i = 0; i < hashtagArray.length; i++) {
       if (hashtagArray[i].length < 2 && hashtagArray[i].substr(0, 1) === '#') {
         textHashtags.setCustomValidity('Хэш-тег не может состоять только из одной решётки');
+        return;
       } else if (hashtagArray[i].substr(0, 1) !== '#') {
         textHashtags.setCustomValidity('Хэш-тег должен начинаться с решётки');
+        return;
       } else if (hashtagArray[i].split('#').length > 1) {
         textHashtags.setCustomValidity('Хэш-теги должны разделяться пробелами');
+        return;
       } else if (findDuplicateHashtags(hashtagArray, hashtagArray[i]) > 1) {
         textHashtags.setCustomValidity('Один и тот же хэш-тег не может быть использован дважды');
+        return;
       } else if (hashtagArray[i].length > 20) {
         textHashtags.setCustomValidity('Максимальная длина одного хэш-тега 20 символов');
+        return;
       } else {
         textHashtags.setCustomValidity('');
       }
