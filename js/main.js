@@ -176,7 +176,273 @@ function hide() {
   commentsLoader.classList.add('visually-hidden');
 }
 
+/*
+Открытие и закрытие формы
+*/
+var imageUploadWindow = document.querySelector('.img-upload');
+var uploadField = imageUploadWindow.querySelector('#upload-file');
+var imageUpload = imageUploadWindow.querySelector('.img-upload__overlay');
+var imageUploadCancel = imageUpload.querySelector('#upload-cancel');
+var ESC_KEYCODE = 27;
+
+// Отслеживаем событие изменения значения поля и открываем окно загрузки фото
+uploadField.addEventListener('change', function () {
+  imageUpload.classList.remove('hidden');
+  document.addEventListener('keydown', onPopupEscPress);
+  effectLevel.classList.add('hidden');
+  scaleControlValue.value = '100%';
+  addAllEventListeners();
+  addRadioEventListeners();
+});
+
+// Функция закрытия по клавише Esc, не срабатывает, когда фокус на поле хэштегов
+var onPopupEscPress = function (evt) {
+  if (evt.target === textHashtags) {
+    return;
+  }
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+// Функция закрытия окна загрузки фото
+var closePopup = function () {
+  imageUpload.classList.add('hidden');
+  uploadField.value = '';
+  document.removeEventListener('keydown', onPopupEscPress);
+  removeAllEventListeners();
+  removeRadioEventListeners();
+  clearDefault();
+  if (imagePreview.classList.length === 2) {
+    imagePreview.classList.remove(imagePreview.classList[1]);
+  }
+};
+
+imageUploadCancel.addEventListener('click', closePopup);
+
+/*
+Применение эффекта на изображении.
+*/
+var imagePreview = imageUploadWindow.querySelector('.img-upload__preview');
+var innerImage = imagePreview.children[0];
+var effectLevel = imageUploadWindow.querySelector('.effect-level');
+var effectsRadio = document.querySelectorAll('.effects__radio');
+var checkedValue;
+var filters = {
+  none: {
+    class: 'effects__preview--none',
+    style: 'none'
+  },
+  chrome: {
+    class: 'effects__preview--chrome',
+    style: 'grayscale',
+    max: 1,
+    min: 0
+  },
+  sepia: {
+    class: 'effects__preview--sepia',
+    style: 'sepia',
+    max: 1,
+    min: 0
+  },
+  marvin: {
+    class: 'effects__preview--marvin',
+    style: 'invert',
+    max: 100,
+    min: 0,
+    postFix: '%'
+  },
+  phobos: {
+    class: 'effects__preview--phobos',
+    style: 'blur',
+    max: 3,
+    min: 0,
+    postFix: 'px'
+  },
+  heat: {
+    class: 'effects__preview--heat',
+    style: 'brightness',
+    max: 3,
+    min: 1
+  }
+};
+
+// Функция проверяет количество классов на элементе и добавляет фильтры
+var onRadioClick = function (evt) {
+  checkedValue = evt.target.value;
+  if (innerImage.classList.length === 2) {
+    innerImage.classList.remove(innerImage.classList[1]);
+    toggleScale(checkedValue);
+    applyFilter(checkedValue);
+  } else {
+    toggleScale(checkedValue);
+    applyFilter(checkedValue);
+  }
+};
+
+// Функция создает обработчик события для всех кнопок
+var addRadioEventListeners = function () {
+  for (var i = 0; i < effectsRadio.length; i++) {
+    effectsRadio[i].addEventListener('click', onRadioClick);
+  }
+};
+
+// Функция удаляет обработчик события для всех кнопок
+var removeRadioEventListeners = function () {
+  for (var i = 0; i < effectsRadio.length; i++) {
+    effectsRadio[i].removeEventListener('click', onRadioClick);
+  }
+};
+
+// Функция выполняет проверку: если фильтр Оригинал, то убирает ползунок
+function toggleScale(selectedValue) {
+  return selectedValue !== 'none' ? effectLevel.classList.remove('hidden') : effectLevel.classList.add('hidden');
+}
+
+// Функция добавления фильтра на изображение
+function applyFilter(selectedValue) {
+  innerImage.classList.add(filters[selectedValue].class);
+  applyFilterLevel(filters[selectedValue].min, filters[selectedValue].max, filters[selectedValue].style, 1, filters[selectedValue].postFix);
+}
+
+/*
+Регулирование глубины эффекта
+*/
+var sliderPin = document.querySelector('.effect-level__pin');
+var levelLine = document.querySelector('.effect-level__line');
+var PIN_POSITION_MAX = 450;
+
+// Функция рассчитывает позицию ползунка и применяет фильтр
+var getPosition = function (evt) {
+  // Считывается позиция относительно levelLine
+  var pinCoords = evt.clientX;
+  var shift = pinCoords - levelLine.getBoundingClientRect().left;
+  // Рассчитываем пропорцию
+  var position = shift / PIN_POSITION_MAX;
+  // Применение глубины фильтра пропорционально позиции ползунка
+  applyFilterLevel(filters[checkedValue].min, filters[checkedValue].max, filters[checkedValue].style, position, filters[checkedValue].postFix);
+};
+
+// Функция рассчета глубины фильтра
+var applyFilterLevel = function (minFilterValue, maxFilterValue, styleName, positionValue, postFix) {
+  var filterPostfix = postFix || '';
+  var filterValue = (maxFilterValue - minFilterValue) * positionValue + minFilterValue;
+  var filterStyle = styleName !== 'none' ? styleName + '(' + filterValue + filterPostfix + ')' : styleName;
+  innerImage.style.filter = filterStyle;
+};
+
+/*
+Изменение масштаба изображения
+*/
+var scaleControlSmaller = imageUploadWindow.querySelector('.scale__control--smaller');
+var scaleControlBigger = imageUploadWindow.querySelector('.scale__control--bigger');
+var scaleControlValue = imageUploadWindow.querySelector('.scale__control--value');
+var MIN = 25;
+var STEP = 25;
+var MAX = 100;
+
+// Функция уменьшает картинку
+var changeScaleSmaller = function () {
+  var currentValue = parseInt(scaleControlValue.value.substr(0, scaleControlValue.value.length - 1), 10);
+  if (currentValue > MIN) {
+    var newValue = currentValue - STEP;
+    scaleControlValue.value = newValue + '%';
+    innerImage.style.transform = 'scale(' + newValue / 100 + ')';
+  }
+};
+
+// Функция увеличивает картинку
+var changeScaleBigger = function () {
+  var currentValue = parseInt(scaleControlValue.value.substr(0, scaleControlValue.value.length - 1), 10);
+  if (currentValue < MAX) {
+    var newValue = currentValue + STEP;
+    scaleControlValue.value = newValue + '%';
+    innerImage.style.transform = 'scale(' + newValue / 100 + ')';
+  }
+};
+
+// Сбрасывает вид изображения до исходного состояния
+var clearDefault = function () {
+  innerImage.style.transform = 'scale(1)';
+  if (innerImage.classList.length === 1) {
+    innerImage.classList.remove(innerImage.classList[0]);
+  }
+  innerImage.style.filter = 'none';
+};
+
+/*
+Валидация хэштегов
+*/
+var textHashtags = document.querySelector('.text__hashtags');
+var hashtagValue = '';
+var hashtagArray = [];
+
+// Функция находит два одинаковых элемента в массиве хэштегов
+var findDuplicateHashtags = function (hashtags, hashtag) {
+  var count = 0;
+  for (var i = 0; i < hashtags.length; i++) {
+    // Поиск нечувствителен к регистру
+    if (hashtags[i].toLowerCase() === hashtag.toLowerCase()) {
+      count++;
+    }
+  }
+  return count;
+};
+
+// Функция валидации хэштегов
+var checkHashtagValidity = function () {
+  hashtagValue = textHashtags.value;
+  hashtagArray = hashtagValue.split(' ');
+  textHashtags.setCustomValidity('');
+  if (hashtagArray.length <= 5) {
+    for (var i = 0; i < hashtagArray.length; i++) {
+      if (hashtagArray[i].length < 2 && hashtagArray[i][0] === '#') {
+        textHashtags.setCustomValidity('Хэш-тег не может состоять только из одной решётки');
+        return;
+      } else if (hashtagArray[i][0] !== '#') {
+        textHashtags.setCustomValidity('Хэш-тег должен начинаться с решётки');
+        return;
+      } else if (hashtagArray[i].split('#').length > 1) {
+        textHashtags.setCustomValidity('Хэш-теги должны разделяться пробелами');
+        return;
+      } else if (findDuplicateHashtags(hashtagArray, hashtagArray[i]) > 1) {
+        textHashtags.setCustomValidity('Один и тот же хэш-тег не может быть использован дважды');
+        return;
+      } else if (hashtagArray[i].length > 20) {
+        textHashtags.setCustomValidity('Максимальная длина одного хэш-тега 20 символов');
+        return;
+      }
+    }
+  } else {
+    textHashtags.setCustomValidity('Нельзя использовать больше пяти хэш-тегов');
+  }
+};
+
+// Функция добавляет все обработчики событий
+var addAllEventListeners = function () {
+  // Отслеживает событие 'mouseup' на ползунке слайдера
+  sliderPin.addEventListener('mouseup', getPosition);
+  // Отслеживает клик по кнопке "-"
+  scaleControlSmaller.addEventListener('click', changeScaleSmaller);
+  // Отслеживает клик по кнопке "+"
+  scaleControlBigger.addEventListener('click', changeScaleBigger);
+  // Отслеживаем событие ввода хэштегов
+  textHashtags.addEventListener('input', checkHashtagValidity);
+};
+
+// Функция удаляет все обработчики событий
+var removeAllEventListeners = function () {
+  sliderPin.removeEventListener('mouseup', getPosition);
+  scaleControlSmaller.removeEventListener('click', changeScaleSmaller);
+  scaleControlBigger.removeEventListener('click', changeScaleBigger);
+  textHashtags.removeEventListener('input', checkHashtagValidity);
+};
+
 init();
-showPicture();
-fillBigCard(arrayOfObjects[1]);
-hide();
+
+var debug = false;
+if (debug) {
+  showPicture();
+  fillBigCard(arrayOfObjects[1]);
+  hide();
+}
