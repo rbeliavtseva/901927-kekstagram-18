@@ -184,6 +184,8 @@ var uploadField = imageUploadWindow.querySelector('#upload-file');
 var imageUpload = imageUploadWindow.querySelector('.img-upload__overlay');
 var imageUploadCancel = imageUpload.querySelector('#upload-cancel');
 var ESC_KEYCODE = 27;
+var userCommentField = document.querySelector('.text__description');
+
 
 // Отслеживаем событие изменения значения поля и открываем окно загрузки фото
 uploadField.addEventListener('change', function () {
@@ -199,7 +201,10 @@ uploadField.addEventListener('change', function () {
 var onPopupEscPress = function (evt) {
   if (evt.target === textHashtags) {
     return;
+  } else if (evt.target === userCommentField) {
+    return;
   }
+
   if (evt.keyCode === ESC_KEYCODE) {
     closePopup();
   }
@@ -402,7 +407,7 @@ var checkHashtagValidity = function () {
       } else if (hashtagArray[i][0] !== '#') {
         textHashtags.setCustomValidity('Хэш-тег должен начинаться с решётки');
         return;
-      } else if (hashtagArray[i].split('#').length > 1) {
+      } else if (hashtagArray[i].split('#').length < 1) {
         textHashtags.setCustomValidity('Хэш-теги должны разделяться пробелами');
         return;
       } else if (findDuplicateHashtags(hashtagArray, hashtagArray[i]) > 1) {
@@ -440,9 +445,77 @@ var removeAllEventListeners = function () {
 
 init();
 
-var debug = false;
-if (debug) {
-  showPicture();
-  fillBigCard(arrayOfObjects[1]);
-  hide();
-}
+/*
+Возможность показа полноэкранной версии для каждого фото
+*/
+var pictureSmall = document.querySelectorAll('.picture');
+var pictureCancel = document.querySelector('.big-picture__cancel');
+var commentField = document.querySelector('.social__footer-text');
+var ENTER_KEYCODE = 13;
+
+// Функция поиска, возвращает индекс объекта при совпадении текущего src со значением поля url объекта
+var getPhotoIndexByUrl = function (url) {
+  var index = -1;
+  for (var i = 0; i < arrayOfObjects.length; i++) {
+    if (arrayOfObjects[i].url === url) {
+      index = i;
+    }
+  }
+  return index;
+};
+
+// Обработчик события для клика по фото
+var onPhotoClick = function (evt) {
+  var photoSource = evt.target.getAttribute('src');
+  var index = getPhotoIndexByUrl(photoSource);
+  if (index !== -1) {
+    showPicture();
+    fillBigCard(arrayOfObjects[index]);
+    hide();
+    document.addEventListener('keydown', onBigPicturePopupEscPress);
+  }
+};
+
+// Функция добавляет обработчики событий всем превью фотографий
+var addPhotoEventListeners = function (picturesArray) {
+  for (var i = 0; i < picturesArray.length; i++) {
+    picturesArray[i].addEventListener('click', onPhotoClick);
+    // Не работает, обработчики не добавляются
+    picturesArray[i].addEventListener('keydown', onPreviewEnterPress);
+  }
+};
+
+// Функция закрытия попапа
+var closeBigPicturePopup = function () {
+  bigPicture.classList.add('hidden');
+  document.removeEventListener('keydown', onBigPicturePopupEscPress);
+};
+
+addPhotoEventListeners(pictureSmall);
+pictureCancel.addEventListener('click', closeBigPicturePopup);
+
+// Функция открытия по клавише Enter
+var onPreviewEnterPress = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    onPhotoClick(evt);
+  }
+};
+
+// Функция закрытия по клавише Esc
+var onBigPicturePopupEscPress = function (evt) {
+  if (evt.target === commentField) {
+    return;
+  }
+  if (evt.keyCode === ESC_KEYCODE) {
+    closeBigPicturePopup();
+  }
+};
+
+// Валидация комментариев
+commentField.addEventListener('invalid', function () {
+  if (userCommentField.validity.tooLong) {
+    commentField.setCustomValidity('Комментарий не должен превышать 140 символов');
+  } else {
+    commentField.setCustomValidity('');
+  }
+});
