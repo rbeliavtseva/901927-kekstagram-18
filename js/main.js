@@ -84,7 +84,7 @@ function createPictureItem(item) {
   var image = element.querySelector('.picture__img');
   image.src = item.url;
   var comments = element.querySelector('.picture__comments');
-  comments.textContent = item.comments.join('\n');
+  comments.textContent = item.comments.length;
   var likes = element.querySelector('.picture__likes');
   likes.textContent = item.likes;
   return element;
@@ -459,6 +459,7 @@ var getPhotoIndexByUrl = function (url) {
   for (var i = 0; i < arrayOfObjects.length; i++) {
     if (arrayOfObjects[i].url === url) {
       index = i;
+      return index;
     }
   }
   return index;
@@ -466,7 +467,7 @@ var getPhotoIndexByUrl = function (url) {
 
 // Обработчик события для клика по фото
 var onPhotoClick = function (evt) {
-  var photoSource = evt.target.getAttribute('src');
+  var photoSource = evt.target.getAttribute('class') === 'picture' ? evt.target.children[0].getAttribute('src') : evt.target.getAttribute('src');
   var index = getPhotoIndexByUrl(photoSource);
   if (index !== -1) {
     showPicture();
@@ -476,12 +477,19 @@ var onPhotoClick = function (evt) {
   }
 };
 
+// Функция открытия по клавише Enter
+var onElementKeyDown = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    onPhotoClick(evt);
+  }
+};
+
 // Функция добавляет обработчики событий всем превью фотографий
 var addPhotoEventListeners = function (picturesArray) {
   for (var i = 0; i < picturesArray.length; i++) {
     picturesArray[i].addEventListener('click', onPhotoClick);
     // Не работает, обработчики не добавляются
-    picturesArray[i].addEventListener('keydown', onPreviewEnterPress);
+    picturesArray[i].addEventListener('keydown', onElementKeyDown);
   }
 };
 
@@ -493,13 +501,6 @@ var closeBigPicturePopup = function () {
 
 addPhotoEventListeners(pictureSmall);
 pictureCancel.addEventListener('click', closeBigPicturePopup);
-
-// Функция открытия по клавише Enter
-var onPreviewEnterPress = function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    onPhotoClick(evt);
-  }
-};
 
 // Функция закрытия по клавише Esc
 var onBigPicturePopupEscPress = function (evt) {
