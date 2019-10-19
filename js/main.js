@@ -455,19 +455,20 @@ var ENTER_KEYCODE = 13;
 
 // Функция поиска, возвращает индекс объекта при совпадении текущего src со значением поля url объекта
 var getPhotoIndexByUrl = function (url) {
-  var index = -1;
   for (var i = 0; i < arrayOfObjects.length; i++) {
     if (arrayOfObjects[i].url === url) {
-      index = i;
-      return index;
+      return i;
     }
   }
-  return index;
+  return -1;
 };
 
 // Обработчик события для клика по фото
 var onPhotoClick = function (evt) {
-  var photoSource = evt.target.getAttribute('class') === 'picture' ? evt.target.children[0].getAttribute('src') : evt.target.getAttribute('src');
+  var photoSource = evt.target.getAttribute('class') === 'picture'
+    ? evt.target.children[0].getAttribute('src')
+    : evt.target.getAttribute('src');
+
   var index = getPhotoIndexByUrl(photoSource);
   if (index !== -1) {
     showPicture();
@@ -488,7 +489,6 @@ var onElementKeyDown = function (evt) {
 var addPhotoEventListeners = function (picturesArray) {
   for (var i = 0; i < picturesArray.length; i++) {
     picturesArray[i].addEventListener('click', onPhotoClick);
-    // Не работает, обработчики не добавляются
     picturesArray[i].addEventListener('keydown', onElementKeyDown);
   }
 };
