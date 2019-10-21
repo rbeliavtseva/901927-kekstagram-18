@@ -194,6 +194,7 @@ uploadField.addEventListener('change', function () {
   effectLevel.classList.add('hidden');
   scaleControlValue.value = '100%';
   addAllEventListeners();
+  addScaleControlsEventListeners();
   addRadioEventListeners();
 });
 
@@ -216,6 +217,7 @@ var closePopup = function () {
   uploadField.value = '';
   document.removeEventListener('keydown', onPopupEscPress);
   removeAllEventListeners();
+  removeScaleControlsEventListeners();
   removeRadioEventListeners();
   clearDefault();
   if (imagePreview.classList.length === 2) {
@@ -427,10 +429,10 @@ var checkHashtagValidity = function () {
 var addAllEventListeners = function () {
   // Отслеживает событие 'mouseup' на ползунке слайдера
   sliderPin.addEventListener('mouseup', getPosition);
-  // Отслеживает клик по кнопке "-"
-  scaleControlSmaller.addEventListener('click', changeScaleSmaller);
-  // Отслеживает клик по кнопке "+"
-  scaleControlBigger.addEventListener('click', changeScaleBigger);
+  // // Отслеживает клик по кнопке "-"
+  // scaleControlSmaller.addEventListener('click', changeScaleSmaller);
+  // // Отслеживает клик по кнопке "+"
+  // scaleControlBigger.addEventListener('click', changeScaleBigger);
   // Отслеживаем событие ввода хэштегов
   textHashtags.addEventListener('input', checkHashtagValidity);
 };
@@ -438,9 +440,21 @@ var addAllEventListeners = function () {
 // Функция удаляет все обработчики событий
 var removeAllEventListeners = function () {
   sliderPin.removeEventListener('mouseup', getPosition);
+  // scaleControlSmaller.removeEventListener('click', changeScaleSmaller);
+  // scaleControlBigger.removeEventListener('click', changeScaleBigger);
+  textHashtags.removeEventListener('input', checkHashtagValidity);
+};
+
+var addScaleControlsEventListeners = function () {
+  // Отслеживает клик по кнопке "-"
+  scaleControlSmaller.addEventListener('click', changeScaleSmaller);
+  // Отслеживает клик по кнопке "+"
+  scaleControlBigger.addEventListener('click', changeScaleBigger);
+};
+
+var removeScaleControlsEventListeners = function () {
   scaleControlSmaller.removeEventListener('click', changeScaleSmaller);
   scaleControlBigger.removeEventListener('click', changeScaleBigger);
-  textHashtags.removeEventListener('input', checkHashtagValidity);
 };
 
 init();
