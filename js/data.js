@@ -83,22 +83,22 @@
   // Получаем контейнер для фото
   var picturesContainer = document.querySelector('.pictures');
 
-  var arrayOfObjects;
+  var photoCards;
 
   // Функция для вставки фрагмента в разметку
   function setPictures() {
-    picturesContainer.appendChild(createPictureItemArray(arrayOfObjects));
+    picturesContainer.appendChild(createPictureItemArray(photoCards));
   }
 
   // Функция инициализации
   function init() {
-    arrayOfObjects = getPhotoCardsArray();
+    photoCards = getPhotoCardsArray();
     setPictures();
   }
 
   init();
 
   window.data = {
-    arrayOfObjects: arrayOfObjects
+    photoCards: photoCards
   };
 })();

@@ -1,41 +1,41 @@
 'use strict';
 
 (function () {
-  var scaleControlSmaller = document.querySelector('.scale__control--smaller');
-  var scaleControlBigger = document.querySelector('.scale__control--bigger');
-  var scaleControlValue = document.querySelector('.scale__control--value');
+  var controlSmaller = document.querySelector('.scale__control--smaller');
+  var controlBigger = document.querySelector('.scale__control--bigger');
+  var controlValue = document.querySelector('.scale__control--value');
   var MIN = 25;
   var STEP = 25;
   var MAX = 100;
 
-  var addScaleControlsEventListeners = function () {
+  var addControlsEventListeners = function () {
     // Отслеживает клик по кнопке "-"
-    scaleControlSmaller.addEventListener('click', changeScaleSmaller);
+    controlSmaller.addEventListener('click', changeScaleSmaller);
     // Отслеживает клик по кнопке "+"
-    scaleControlBigger.addEventListener('click', changeScaleBigger);
+    controlBigger.addEventListener('click', changeScaleBigger);
   };
 
-  var removeScaleControlsEventListeners = function () {
-    scaleControlSmaller.removeEventListener('click', changeScaleSmaller);
-    scaleControlBigger.removeEventListener('click', changeScaleBigger);
+  var removeControlsEventListeners = function () {
+    controlSmaller.removeEventListener('click', changeScaleSmaller);
+    controlBigger.removeEventListener('click', changeScaleBigger);
   };
 
   // Функция уменьшает картинку
   var changeScaleSmaller = function () {
-    var currentValue = parseInt(scaleControlValue.value.substr(0, scaleControlValue.value.length - 1), 10);
+    var currentValue = parseInt(controlValue.value.substr(0, controlValue.value.length - 1), 10);
     if (currentValue > MIN) {
       var newValue = currentValue - STEP;
-      scaleControlValue.value = newValue + '%';
+      controlValue.value = newValue + '%';
       window.photoEffects.innerImage.style.transform = 'scale(' + newValue / 100 + ')';
     }
   };
 
   // Функция увеличивает картинку
   var changeScaleBigger = function () {
-    var currentValue = parseInt(scaleControlValue.value.substr(0, scaleControlValue.value.length - 1), 10);
+    var currentValue = parseInt(controlValue.value.substr(0, controlValue.value.length - 1), 10);
     if (currentValue < MAX) {
       var newValue = currentValue + STEP;
-      scaleControlValue.value = newValue + '%';
+      controlValue.value = newValue + '%';
       window.photoEffects.innerImage.style.transform = 'scale(' + newValue / 100 + ')';
     }
   };
@@ -50,10 +50,10 @@
   };
 
   window.scalePicture = {
-    addScaleControlsEventListeners: addScaleControlsEventListeners,
-    removeScaleControlsEventListeners: removeScaleControlsEventListeners,
+    addControlsEventListeners: addControlsEventListeners,
+    removeControlsEventListeners: removeControlsEventListeners,
     clearDefault: clearDefault,
-    scaleControlValue: scaleControlValue
+    controlValue: controlValue
   };
 })();
 

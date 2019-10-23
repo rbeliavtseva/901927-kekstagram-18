@@ -14,9 +14,9 @@
     imageUpload.classList.remove('hidden');
     document.addEventListener('keydown', onPopupEscPress);
     window.photoEffects.effectLevel.classList.add('hidden');
-    window.scalePicture.scaleControlValue.value = '100%';
+    window.scalePicture.controlValue.value = '100%';
     window.photoEffects.sliderPin.addEventListener('mouseup', window.photoEffects.getPosition);
-    window.scalePicture.addScaleControlsEventListeners();
+    window.scalePicture.addControlsEventListeners();
     window.validation.textHashtags.addEventListener('input', window.validation.checkHashtagValidity);
     window.photoEffects.addRadioEventListeners();
   });
@@ -40,7 +40,7 @@
     uploadField.value = '';
     document.removeEventListener('keydown', onPopupEscPress);
     window.photoEffects.sliderPin.removeEventListener('mouseup', window.photoEffects.getPosition);
-    window.scalePicture.removeScaleControlsEventListeners();
+    window.scalePicture.removeControlsEventListeners();
     window.validation.textHashtags.removeEventListener('input', window.validation.checkHashtagValidity);
     window.photoEffects.removeRadioEventListeners();
     window.scalePicture.clearDefault();

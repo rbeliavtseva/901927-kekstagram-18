@@ -25,8 +25,8 @@
 
   // Функция поиска, возвращает индекс объекта при совпадении текущего src со значением поля url объекта
   var getPhotoIndexByUrl = function (url) {
-    for (var i = 0; i < window.data.arrayOfObjects.length; i++) {
-      if (window.data.arrayOfObjects[i].url === url) {
+    for (var i = 0; i < window.data.photoCards.length; i++) {
+      if (window.data.photoCards[i].url === url) {
         return i;
       }
     }
@@ -86,7 +86,7 @@
     var index = getPhotoIndexByUrl(photoSource);
     if (index !== -1) {
       showPicture();
-      fillBigCard(window.data.arrayOfObjects[index]);
+      fillBigCard(window.data.photoCards[index]);
       hide();
       document.addEventListener('keydown', onBigPicturePopupEscPress);
     }
