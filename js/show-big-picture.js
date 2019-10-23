@@ -1,8 +1,11 @@
 'use strict';
 
 (function () {
-  // Показываем большое изображение
   var bigPicture = document.querySelector('.big-picture');
+  var pictureSmall = document.querySelectorAll('.picture');
+  var pictureCancel = document.querySelector('.big-picture__cancel');
+  var commentField = document.querySelector('.social__footer-text');
+  var ENTER_KEYCODE = 13;
 
   function showPicture() {
     bigPicture.classList.remove('hidden');
@@ -15,13 +18,6 @@
     commentsCount.classList.add('visually-hidden');
     commentsLoader.classList.add('visually-hidden');
   }
-  /*
-  Возможность показа полноэкранной версии для каждого фото
-  */
-  var pictureSmall = document.querySelectorAll('.picture');
-  var pictureCancel = document.querySelector('.big-picture__cancel');
-  var commentField = document.querySelector('.social__footer-text');
-  var ENTER_KEYCODE = 13;
 
   // Функция поиска, возвращает индекс объекта при совпадении текущего src со значением поля url объекта
   var getPhotoIndexByUrl = function (url) {
@@ -100,10 +96,10 @@
   };
 
   // Функция добавляет обработчики событий всем превью фотографий
-  var addPhotoEventListeners = function (picturesArray) {
-    for (var i = 0; i < picturesArray.length; i++) {
-      picturesArray[i].addEventListener('click', onPhotoClick);
-      picturesArray[i].addEventListener('keydown', onElementKeyDown);
+  var addPhotoEventListeners = function (pictures) {
+    for (var i = 0; i < pictures.length; i++) {
+      pictures[i].addEventListener('click', onPhotoClick);
+      pictures[i].addEventListener('keydown', onElementKeyDown);
     }
   };
 
