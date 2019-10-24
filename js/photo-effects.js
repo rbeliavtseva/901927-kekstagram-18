@@ -7,8 +7,12 @@
   var effectsRadio = document.querySelectorAll('.effects__radio');
   var sliderPin = document.querySelector('.effect-level__pin');
   var levelLine = document.querySelector('.effect-level__line');
-  var PIN_POSITION_MAX = 450;
+  var effectDepth = document.querySelector('.effect-level__depth');
   var checkedValue;
+  var pinPosition = {
+    MIN: 0,
+    MAX: 450
+  };
   var filters = {
     none: {
       class: 'effects__preview--none',
@@ -51,6 +55,7 @@
   // Функция проверяет количество классов на элементе и добавляет фильтры
   var onRadioClick = function (evt) {
     checkedValue = evt.target.value;
+    changeFilterValue(pinPosition.MAX);
     if (innerImage.classList.length === 2) {
       innerImage.classList.remove(innerImage.classList[1]);
       toggleScale(checkedValue);
@@ -65,13 +70,66 @@
   var addRadioEventListeners = function () {
     for (var i = 0; i < effectsRadio.length; i++) {
       effectsRadio[i].addEventListener('click', onRadioClick);
+      effectsRadio[i].addEventListener('click', onRadioClickAddEvent);
     }
+  };
+
+  var onRadioClickAddEvent = function () {
+    sliderPin.addEventListener('mousedown', onMouseDown);
+  };
+
+  var onRadioClickRemoveEvent = function () {
+    sliderPin.removeEventListener('mousedown', onMouseDown);
+  };
+
+  /*
+  Регулирование глубины эффекта
+  */
+  var changeFilterValue = function (value) {
+    effectDepth.style.width = value + 'px';
+    sliderPin.style.left = value + 'px';
+  };
+
+  var onMouseDown = function (evt) {
+    evt.preventDefault();
+    // Считывается стартовая позиция
+    var startCoords = evt.clientX;
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+      var shift = startCoords - levelLine.getBoundingClientRect().left;
+      // Проверям не выходит ли сдвиг за пределы линии
+      if (shift <= pinPosition.MIN) {
+        shift = pinPosition.MIN;
+      }
+      if (shift > pinPosition.MAX) {
+        shift = pinPosition.MAX;
+      }
+      // Пропорционально высчитываем позицию
+      var position = shift / pinPosition.MAX;
+      // Обновляем позицию стартовой координаты
+      startCoords = moveEvt.clientX;
+      // Меняем UI
+      changeFilterValue(shift);
+      // Меняем глубину фильтра
+      applyFilterLevel(filters[checkedValue].min, filters[checkedValue].max, filters[checkedValue].style, position, filters[checkedValue].postFix);
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   };
 
   // Функция удаляет обработчик события для всех кнопок
   var removeRadioEventListeners = function () {
     for (var i = 0; i < effectsRadio.length; i++) {
       effectsRadio[i].removeEventListener('click', onRadioClick);
+      effectsRadio[i].removeEventListener('click', onRadioClickRemoveEvent);
     }
   };
 
@@ -85,20 +143,6 @@
     innerImage.classList.add(filters[selectedValue].class);
     applyFilterLevel(filters[selectedValue].min, filters[selectedValue].max, filters[selectedValue].style, 1, filters[selectedValue].postFix);
   }
-
-  /*
-  Регулирование глубины эффекта
-  */
-  // Функция рассчитывает позицию ползунка и применяет фильтр
-  var getPosition = function (evt) {
-    // Считывается позиция относительно levelLine
-    var pinCoords = evt.clientX;
-    var shift = pinCoords - levelLine.getBoundingClientRect().left;
-    // Рассчитываем пропорцию
-    var position = shift / PIN_POSITION_MAX;
-    // Применение глубины фильтра пропорционально позиции ползунка
-    applyFilterLevel(filters[checkedValue].min, filters[checkedValue].max, filters[checkedValue].style, position, filters[checkedValue].postFix);
-  };
 
   // Функция рассчета глубины фильтра
   var applyFilterLevel = function (minFilterValue, maxFilterValue, styleName, positionValue, postFix) {
@@ -114,8 +158,7 @@
     addRadioEventListeners: addRadioEventListeners,
     removeRadioEventListeners: removeRadioEventListeners,
     innerImage: innerImage,
-    sliderPin: sliderPin,
-    getPosition: getPosition
+    sliderPin: sliderPin
   };
 })();
 

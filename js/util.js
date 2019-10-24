@@ -12,24 +12,24 @@
   };
 
   // Функция получения рандомного массива чисел в заданном диапазоне
-  var getRandomNumberArray = function (numberOfGeneratedNumbers, startNumberRange, endNumberRange) {
-    var intArray = [];
+  var getRandomNumbers = function (numberOfGeneratedNumbers, startNumberRange, endNumberRange) {
+    var numbers = [];
     // Заполняем массив
-    while (intArray.length < numberOfGeneratedNumbers) {
+    while (numbers.length < numberOfGeneratedNumbers) {
       // Получение рандомного числа в заданном диапазоне из предыдущей функции
       var randomNumber = getRandomNumber(startNumberRange, endNumberRange);
       // Проверяем есть ли число в массиве. Если уже есть - переходим к следующей итерации цикла
-      if (!intArray.includes(randomNumber)) {
-        intArray.push(randomNumber);
+      if (!numbers.includes(randomNumber)) {
+        numbers.push(randomNumber);
       }
     }
-    return intArray;
+    return numbers;
   };
 
   window.util = {
     ESC_KEYCODE: ESC_KEYCODE,
     ENTER_KEYCODE: ENTER_KEYCODE,
     getRandomNumber: getRandomNumber,
-    getRandomNumberArray: getRandomNumberArray
+    getRandomNumbers: getRandomNumbers
   };
 })();

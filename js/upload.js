@@ -15,7 +15,7 @@
     document.addEventListener('keydown', onPopupEscPress);
     window.photoEffects.effectLevel.classList.add('hidden');
     window.scalePicture.controlValue.value = '100%';
-    window.photoEffects.sliderPin.addEventListener('mouseup', window.photoEffects.getPosition);
+    // window.photoEffects.sliderPin.addEventListener('mousedown', window.photoEffects.getPosition);
     window.scalePicture.addControlsEventListeners();
     window.validation.textHashtags.addEventListener('input', window.validation.checkHashtagValidity);
     window.photoEffects.addRadioEventListeners();
@@ -39,7 +39,7 @@
     imageUpload.classList.add('hidden');
     uploadField.value = '';
     document.removeEventListener('keydown', onPopupEscPress);
-    window.photoEffects.sliderPin.removeEventListener('mouseup', window.photoEffects.getPosition);
+    window.photoEffects.sliderPin.removeEventListener('mousedown', window.photoEffects.getPosition);
     window.scalePicture.removeControlsEventListeners();
     window.validation.textHashtags.removeEventListener('input', window.validation.checkHashtagValidity);
     window.photoEffects.removeRadioEventListeners();
