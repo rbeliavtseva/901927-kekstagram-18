@@ -8,7 +8,7 @@
     'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
     'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'];
 
-  var namesArray = ['Артем', 'Борис', 'Афанасий', 'Кекс', 'Георгий', 'Саша'];
+  var names = ['Артем', 'Борис', 'Афанасий', 'Кекс', 'Георгий', 'Саша'];
   // Получаем шаблон
   var pictureTemplate = document.querySelector('#picture').content.querySelector('a');
   // Получаем контейнер для фото
@@ -20,13 +20,13 @@
     var photoCommentObject = {
       avatar: 'img/avatar-' + window.util.getRandomNumber(1, 6) + '.svg',
       message: comments[window.util.getRandomNumber(0, comments.length - 1)],
-      name: namesArray[window.util.getRandomNumber(0, namesArray.length - 1)]
+      name: names[window.util.getRandomNumber(0, names.length - 1)]
     };
     return photoCommentObject;
   }
 
   // Функция получения массива случайных комментариев
-  function getCommentArray(numberOfComments) {
+  function getComments(numberOfComments) {
     var randomComments = [];
     // Заполняем массив
     for (var i = 0; i < numberOfComments; i++) {
@@ -41,15 +41,15 @@
       url: 'photos/' + photoIndexArray[i] + '.jpg',
       description: '',
       likes: window.util.getRandomNumber(15, 200),
-      comments: getCommentArray(window.util.getRandomNumber(1, 2))
+      comments: getComments(window.util.getRandomNumber(1, 2))
     };
   }
 
   // Функция генерирует массив объектов
-  function getPhotoCardsArray() {
+  function getPhotoCards() {
     var objects = [];
     var numberOfObjects = 25;
-    var photoIndexArray = window.util.getRandomNumberArray(numberOfObjects, 1, 25);
+    var photoIndexArray = window.util.getRandomNumbers(numberOfObjects, 1, 25);
     // Цикл для генерации 25 объектов и добавления их в массив objects
     for (var i = 0; i < numberOfObjects; i++) {
       objects.push(createPhotoCard(photoIndexArray, i));
@@ -72,24 +72,24 @@
   }
 
   // Функция для заполнения фрагмента
-  function createPictureItemArray(array) {
+  function createPictureItems(photos) {
     // Создаем фрагмент
     var pictureFragment = document.createDocumentFragment();
     // Заполняем фрагмент сгенерированными элементами
-    for (var i = 0; i < array.length - 1; i++) {
-      pictureFragment.appendChild(createPictureItem(array[i]));
+    for (var i = 0; i < photos.length - 1; i++) {
+      pictureFragment.appendChild(createPictureItem(photos[i]));
     }
     return pictureFragment;
   }
 
   // Функция для вставки фрагмента в разметку
   function setPictures() {
-    picturesContainer.appendChild(createPictureItemArray(photoCards));
+    picturesContainer.appendChild(createPictureItems(photoCards));
   }
 
   // Функция инициализации
   function init() {
-    photoCards = getPhotoCardsArray();
+    photoCards = getPhotoCards();
     setPictures();
   }
 
