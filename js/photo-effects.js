@@ -58,23 +58,20 @@
     changeFilterValue(pinPosition.MAX);
     if (innerImage.classList.length === 2) {
       innerImage.classList.remove(innerImage.classList[1]);
-      toggleScale(checkedValue);
-      applyFilter(checkedValue);
-    } else {
-      toggleScale(checkedValue);
-      applyFilter(checkedValue);
     }
+    toggleScale(checkedValue);
+    applyFilter(checkedValue);
   };
 
   // Функция создает обработчик события для всех кнопок
   var addRadioEventListeners = function () {
     for (var i = 0; i < effectsRadio.length; i++) {
       effectsRadio[i].addEventListener('click', onRadioClick);
-      effectsRadio[i].addEventListener('click', onRadioClickAddEvent);
+      effectsRadio[i].addEventListener('click', onRadioClickAddSliderEvent);
     }
   };
 
-  var onRadioClickAddEvent = function () {
+  var onRadioClickAddSliderEvent = function () {
     sliderPin.addEventListener('mousedown', onMouseDown);
   };
 
@@ -101,8 +98,7 @@
       // Проверям не выходит ли сдвиг за пределы линии
       if (shift <= pinPosition.MIN) {
         shift = pinPosition.MIN;
-      }
-      if (shift > pinPosition.MAX) {
+      } else if (shift > pinPosition.MAX) {
         shift = pinPosition.MAX;
       }
       // Пропорционально высчитываем позицию
