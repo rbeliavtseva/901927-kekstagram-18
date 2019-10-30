@@ -75,7 +75,7 @@
     sliderPin.addEventListener('mousedown', onMouseDown);
   };
 
-  var onRadioClickRemoveEvent = function () {
+  var onRadioClickRemoveSliderEvent = function () {
     sliderPin.removeEventListener('mousedown', onMouseDown);
   };
 
@@ -125,7 +125,7 @@
   var removeRadioEventListeners = function () {
     for (var i = 0; i < effectsRadio.length; i++) {
       effectsRadio[i].removeEventListener('click', onRadioClick);
-      effectsRadio[i].removeEventListener('click', onRadioClickRemoveEvent);
+      effectsRadio[i].removeEventListener('click', onRadioClickRemoveSliderEvent);
     }
   };
 

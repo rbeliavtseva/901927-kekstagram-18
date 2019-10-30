@@ -2,7 +2,7 @@
 
 (function () {
   var bigPicture = document.querySelector('.big-picture');
-  var pictureSmall = document.querySelectorAll('.picture');
+  var pictureSmall = [];
   var pictureCancel = document.querySelector('.big-picture__cancel');
   var commentField = document.querySelector('.social__footer-text');
   var ENTER_KEYCODE = 13;
@@ -109,7 +109,6 @@
     document.removeEventListener('keydown', onBigPicturePopupEscPress);
   };
 
-  addPhotoEventListeners(pictureSmall);
   pictureCancel.addEventListener('click', closeBigPicturePopup);
 
   // Функция закрытия по клавише Esc
@@ -122,7 +121,15 @@
     }
   };
 
+  var init = function () {
+    pictureSmall = document.querySelectorAll('.picture');
+    addPhotoEventListeners(pictureSmall);
+  };
+
   window.showBigPicture = {
-    commentField: commentField
+    commentField: commentField,
+    onPhotoClick: onPhotoClick,
+    onElementKeyDown: onElementKeyDown,
+    init: init
   };
 })();
