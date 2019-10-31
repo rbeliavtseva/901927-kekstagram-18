@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var URL = 'https://js.dump.academy/kekstagram/data';
+  var URL_GET = 'https://js.dump.academy/kekstagram/data';
   var TIMEOUT = 10000;
 
   var Status = {
@@ -18,41 +18,43 @@
     STATUS: 'Cтатус ответа: '
   };
 
-  var onRequestLoad = function (onSuccess, onError) {
+  var getXHR = function (succsessLoad, errorLoad) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
-
+    xhr.timeout = TIMEOUT;
     xhr.addEventListener('load', function () {
       switch (xhr.status) {
         case Status.SUCCSESS:
-          onSuccess(xhr.response);
+          succsessLoad(xhr.response);
           break;
         case Status.ERROR:
-          onError(Message.BAD_REQUEST);
+          errorLoad(Message.BAD_REQUEST);
           break;
         case Status.NOT_FOUND:
-          onError(Message.NOTHING_FOUND);
+          errorLoad(Message.NOTHING_FOUND);
           break;
-
         default:
-          onError(Message.STATUS + xhr.status + ' ' + xhr.statusText);
+          errorLoad(Message.STATUS + xhr.status + ' ' + xhr.statusText);
       }
-    });
+      xhr.addEventListener('error', function () {
+        errorLoad(Message.ERROR);
+      });
 
-    xhr.addEventListener('error', function () {
-      onError(Message.ERROR);
+      xhr.addEventListener('timeout', function () {
+        errorLoad(Message.TIMEOUT_ERROR + xhr.timeout + 'мс');
+      });
     });
+    return xhr;
+  };
 
-    xhr.addEventListener('timeout', function () {
-      onError(Message.TIMEOUT_ERROR + xhr.timeout + 'мс');
-    });
-
-    xhr.timeout = TIMEOUT;
-    xhr.open('GET', URL);
+  var sendGetRequest = function (url, onSuccess, onError) {
+    var xhr = getXHR(onSuccess, onError);
+    xhr.open('GET', url);
     xhr.send();
   };
 
   window.load = {
-    onRequestLoad: onRequestLoad
+    sendGetRequest: sendGetRequest,
+    URL_GET: URL_GET
   };
 })();

@@ -60,5 +60,5 @@
     }
   };
 
-  window.load.onRequestLoad(onSuccessRequest, onErrorRequest);
+  window.load.sendGetRequest(window.load.URL_GET, onSuccessRequest, onErrorRequest);
 })();
