@@ -1,101 +1,64 @@
 'use strict';
 
 (function () {
-  var comments = ['Всё отлично!',
-    'В целом всё неплохо. Но не всё.',
-    'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
-    'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
-    'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
-    'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'];
-
-  var names = ['Артем', 'Борис', 'Афанасий', 'Кекс', 'Георгий', 'Саша'];
-  // Получаем шаблон
   var pictureTemplate = document.querySelector('#picture').content.querySelector('a');
-  // Получаем контейнер для фото
+  var errorTemplate = document.querySelector('#error').content.querySelector('section');
   var picturesContainer = document.querySelector('.pictures');
-  var photoCards;
-
-  // Функция генерации объекта комментария
-  function getPhotoComment() {
-    var photoCommentObject = {
-      avatar: 'img/avatar-' + window.util.getRandomNumber(1, 6) + '.svg',
-      message: comments[window.util.getRandomNumber(0, comments.length - 1)],
-      name: names[window.util.getRandomNumber(0, names.length - 1)]
-    };
-    return photoCommentObject;
-  }
-
-  // Функция получения массива случайных комментариев
-  function getComments(numberOfComments) {
-    var randomComments = [];
-    // Заполняем массив
-    for (var i = 0; i < numberOfComments; i++) {
-      randomComments.push(getPhotoComment());
-    }
-    return randomComments;
-  }
-
-  // Функция генерации карточки фото
-  function createPhotoCard(photoIndexArray, i) {
-    return {
-      url: 'photos/' + photoIndexArray[i] + '.jpg',
-      description: '',
-      likes: window.util.getRandomNumber(15, 200),
-      comments: getComments(window.util.getRandomNumber(1, 2))
-    };
-  }
+  var main = document.querySelector('main');
+  var photoCards = [];
 
   // Функция генерирует массив объектов
-  function getPhotoCards() {
+  function shufflePhotos(photoPosts) {
     var objects = [];
-    var numberOfObjects = 25;
-    var photoIndexArray = window.util.getRandomNumbers(numberOfObjects, 1, 25);
+    var numberOfObjects = photoPosts.length;
+    var photoIndex = window.util.getRandomNumbers(numberOfObjects, 0, photoPosts.length - 1);
     // Цикл для генерации 25 объектов и добавления их в массив objects
-    for (var i = 0; i < numberOfObjects; i++) {
-      objects.push(createPhotoCard(photoIndexArray, i));
+    for (var i = 0; i < photoIndex.length; i++) {
+      objects.push(photoPosts[photoIndex[i]]);
     }
     return objects;
   }
 
   // Функция генерации DOM-элемента
-  function createPictureItem(item) {
-    // Клонируем структуру из шаблона
-    var element = pictureTemplate.cloneNode(true);
-    // Выбираем элементы и заполняем их элементами массива
-    var image = element.querySelector('.picture__img');
-    image.src = item.url;
-    var userComments = element.querySelector('.picture__comments');
-    userComments.textContent = item.comments.length;
-    var likes = element.querySelector('.picture__likes');
-    likes.textContent = item.likes;
-    return element;
-  }
+  var createPhotoPost = function (data) {
+    var photoPost = pictureTemplate.cloneNode(true);
+    photoPost.querySelector('.picture__img').src = data.url;
+    photoPost.querySelector('.picture__comments').textContent = data.comments.length;
+    photoPost.querySelector('.picture__likes').textContent = data.likes;
+    return photoPost;
+  };
 
   // Функция для заполнения фрагмента
-  function createPictureItems(photos) {
-    // Создаем фрагмент
+  function createPictureItems(data) {
     var pictureFragment = document.createDocumentFragment();
-    // Заполняем фрагмент сгенерированными элементами
-    for (var i = 0; i < photos.length - 1; i++) {
-      pictureFragment.appendChild(createPictureItem(photos[i]));
+    for (var i = 0; i < data.length - 1; i++) {
+      pictureFragment.appendChild(createPhotoPost(data[i]));
     }
+    picturesContainer.appendChild(pictureFragment);
     return pictureFragment;
   }
 
-  // Функция для вставки фрагмента в разметку
-  function setPictures() {
-    picturesContainer.appendChild(createPictureItems(photoCards));
-  }
+  var onSuccessRequest = function (response) {
+    photoCards = shufflePhotos(response);
+    createPictureItems(photoCards);
 
-  // Функция инициализации
-  function init() {
-    photoCards = getPhotoCards();
-    setPictures();
-  }
+    window.data = {
+      photoCards: photoCards
+    };
 
-  init();
-
-  window.data = {
-    photoCards: photoCards
+    window.showBigPicture.init();
   };
+
+  var onErrorRequest = function () {
+    var errorPopup = errorTemplate.cloneNode(true);
+    main.appendChild(errorPopup);
+    var errorButtons = document.querySelectorAll('.error__button');
+    for (var i = 0; i < errorButtons.length; i++) {
+      errorButtons[i].addEventListener('click', function () {
+        main.removeChild(errorPopup);
+      });
+    }
+  };
+
+  window.load.sendGetRequest(window.load.URL_GET, onSuccessRequest, onErrorRequest);
 })();
