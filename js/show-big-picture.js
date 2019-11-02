@@ -5,7 +5,6 @@
   var pictureSmall = [];
   var pictureCancel = document.querySelector('.big-picture__cancel');
   var commentField = document.querySelector('.social__footer-text');
-  var ENTER_KEYCODE = 13;
 
   function showPicture() {
     bigPicture.classList.remove('hidden');
@@ -90,7 +89,7 @@
 
   // Функция открытия по клавише Enter
   var onElementKeyDown = function (evt) {
-    if (evt.keyCode === ENTER_KEYCODE) {
+    if (evt.keyCode === window.util.ENTER_KEYCODE) {
       onPhotoClick(evt);
     }
   };

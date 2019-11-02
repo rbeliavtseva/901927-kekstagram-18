@@ -34,15 +34,22 @@
     }
   };
 
+  var clearValues = function () {
+    uploadField.value = '';
+    window.validation.textHashtags.value = '';
+    window.validation.userCommentField.value = '';
+  };
+
   // Функция закрытия окна загрузки фото
   var closePopup = function () {
     imageUpload.classList.add('hidden');
-    uploadField.value = '';
     document.removeEventListener('keydown', onPopupEscPress);
     window.photoEffects.sliderPin.removeEventListener('mousedown', window.photoEffects.getPosition);
     window.scalePicture.removeControlsEventListeners();
     window.validation.textHashtags.removeEventListener('input', window.validation.checkHashtagValidity);
     window.photoEffects.removeRadioEventListeners();
+    clearValues();
+    window.validation.clearFormValidation();
     window.scalePicture.clearDefault();
     if (window.photoEffects.imagePreview.classList.length === 2) {
       window.photoEffects.imagePreview.classList.remove(window.photoEffects.imagePreview.classList[1]);
@@ -50,4 +57,8 @@
   };
 
   imageUploadCancel.addEventListener('click', closePopup);
+
+  window.uploadPicture = {
+    closePopup: closePopup
+  };
 })();
