@@ -50,15 +50,78 @@
   };
 
   var onErrorRequest = function () {
-    var errorPopup = errorTemplate.cloneNode(true);
+    window.uploadPicture.closePopup();
     main.appendChild(errorPopup);
+    document.addEventListener('keydown', onErrorPopupEscPress);
     var errorButtons = document.querySelectorAll('.error__button');
     for (var i = 0; i < errorButtons.length; i++) {
       errorButtons[i].addEventListener('click', function () {
         main.removeChild(errorPopup);
+        document.removeEventListener('keydown', errorPopup);
       });
     }
   };
 
+  var onErrorPopupEscPress = function (evt) {
+    if (evt.keyCode === window.util.ESC_KEYCODE) {
+      main.removeChild(errorPopup);
+    }
+  };
+
   window.load.sendGetRequest(window.load.URL_GET, onSuccessRequest, onErrorRequest);
+
+  /*
+  Загрузка на сервер
+  */
+  var successSubmitTemplate = document.querySelector('#success').content.querySelector('section');
+  var imgUploadControl = document.querySelector('.img-upload__label');
+  var successSubmitPopup = successSubmitTemplate.cloneNode(true);
+  var errorPopup = errorTemplate.cloneNode(true);
+
+  var onSuccesSubmitRequest = function () {
+    window.uploadPicture.closePopup();
+    main.appendChild(successSubmitPopup);
+    var successOverlay = document.querySelector('.success');
+    var successButton = document.querySelector('.success__button');
+
+    var onOverlayClick = function (evt) {
+      if (evt.target === successSubmitPopup.children[0] || evt.target === successSubmitPopup.children[0].children[0]) {
+        evt.stopPropagation();
+        return;
+      } else {
+        main.removeChild(successSubmitPopup);
+        removeEventListeners();
+      }
+    };
+
+    var onSuccessPopupEscPress = function (evt) {
+      if (evt.keyCode === window.util.ESC_KEYCODE) {
+        main.removeChild(successSubmitPopup);
+        removeEventListeners();
+      }
+    };
+
+    var removeEventListeners = function () {
+      successOverlay.removeEventListener('click', onOverlayClick);
+      successButton.removeEventListener('click', onSuccessButtonClick);
+      document.removeEventListener('keydown', onSuccessPopupEscPress);
+    };
+
+    var onSuccessButtonClick = function (evt) {
+      main.removeChild(successSubmitPopup);
+      evt.stopPropagation();
+      removeEventListeners();
+    };
+
+    document.addEventListener('keydown', onSuccessPopupEscPress);
+    successOverlay.addEventListener('click', onOverlayClick);
+    successButton.addEventListener('click', onSuccessButtonClick);
+    imgUploadControl.style.backgroundImage = 'none';
+  };
+
+  var form = document.querySelector('.img-upload__form');
+  form.addEventListener('submit', function (evt) {
+    window.load.sendPostRequest(window.load.URL_POST, new FormData(form), onSuccesSubmitRequest, onErrorRequest);
+    evt.preventDefault();
+  });
 })();
