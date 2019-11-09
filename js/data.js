@@ -9,14 +9,13 @@
   var activeBtn = document.querySelector('.img-filters__button--active');
   var photoCards = [];
   var MAX_NUMBER_OF_OBJECTS = 25;
-  var SORTED_NUMBER_OF_OBJECTS = 10;
+  var FILTERED_NUMBER_OF_OBJECTS = 10;
 
   // Функция генерирует массив объектов
   function shufflePhotos(photoPosts, length) {
     var objects = [];
     var numberOfObjects = photoPosts.length;
     var photoIndex = window.util.getRandomNumbers(numberOfObjects, 0, photoPosts.length - 1);
-    // Цикл для генерации 25 объектов и добавления их в массив objects
     for (var i = 0; i < length; i++) {
       objects.push(photoPosts[photoIndex[i]]);
     }
@@ -83,7 +82,7 @@
       return photos;
     },
     'filter-random': function (photos) {
-      return shufflePhotos(photos, SORTED_NUMBER_OF_OBJECTS);
+      return shufflePhotos(photos, FILTERED_NUMBER_OF_OBJECTS);
     },
     'filter-discussed': function (photos) {
       return photos.sort(function (first, second) {
@@ -92,15 +91,26 @@
     }
   };
 
+  var currentTargetId = 'filter-popular';
+
   var onSortBtnClick = function (evt) {
     if (evt.target.tagName === 'BUTTON') {
-      var photoCardsCopy = photoCards.slice();
-      var sorted = idToSort[evt.target.id](photoCardsCopy);
-      clearPhotoCards();
-      window.debounce(createPictureItems.bind(null, sorted));
-      window.showBigPicture.init();
-      disableBtn(evt);
+      if (evt.target.id !== currentTargetId) {
+        window.debounce(renderFunction.bind(null, evt), evt.target.id);
+        disableBtn(evt);
+        currentTargetId = evt.target.id;
+      } else {
+        return;
+      }
     }
+  };
+
+  var renderFunction = function (evt) {
+    var photoCardsCopy = photoCards.slice();
+    var sorted = idToSort[evt.target.id](photoCardsCopy);
+    clearPhotoCards();
+    createPictureItems(sorted);
+    window.showBigPicture.init();
   };
 
   var clearPhotoCards = function () {
@@ -117,7 +127,6 @@
   };
 
   filters.addEventListener('click', onSortBtnClick);
-
 
   /*
   Загрузка на сервер
