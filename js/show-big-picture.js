@@ -12,10 +12,8 @@
 
   // Прячем блоки счётчика комментариев и загрузки новых комментариев
   function hide() {
-    var commentsLoader = bigPicture.querySelector('.comments-loader');
     var commentsCount = bigPicture.querySelector('.social__comment-count');
     commentsCount.classList.add('visually-hidden');
-    commentsLoader.classList.add('visually-hidden');
   }
 
   // Функция поиска, возвращает индекс объекта при совпадении текущего src со значением поля url объекта
@@ -28,10 +26,10 @@
     return -1;
   };
 
-  function generateSocialComment(comment) {
+  function generateSocialComment(comment, isHidden) {
     // Создание элемента списка
     var newListElement = document.createElement('li');
-    newListElement.className = 'social__comment';
+    newListElement.className = isHidden === true ? 'social__comment visually-hidden' : 'social__comment';
     // Создание элемента img и добавление атрибутов
     var newImageElement = document.createElement('img');
     newImageElement.className = 'social__picture';
@@ -66,11 +64,34 @@
     var socialComments = bigPicture.querySelector('.social__comments');
     socialComments.innerHTML = '';
     for (var i = 0; i < arrayItem.comments.length; i++) {
-      bigPictureFragment.appendChild(generateSocialComment(arrayItem.comments[i]));
+      bigPictureFragment.appendChild(generateSocialComment(arrayItem.comments[i], i > 4));
+    }
+    if (arrayItem.comments.length > 4) {
+      commentsLoadBtn.classList.remove('visually-hidden');
+    } else {
+      commentsLoadBtn.classList.add('visually-hidden');
     }
     // Вставляем фрагмент в разметку
     socialComments.appendChild(bigPictureFragment);
   }
+
+  /*
+    Показ комментариев
+    */
+  var commentsLoadBtn = document.querySelector('.comments-loader');
+
+  var onCommentsLoadBtnClick = function () {
+    var socialCommentsHidden = document.querySelectorAll('.social__comment.visually-hidden');
+    var counter = socialCommentsHidden.length - 5 >= 0 ? 5 : socialCommentsHidden.length;
+    for (var i = 0; i < counter; i++) {
+      socialCommentsHidden[i].classList.remove('visually-hidden');
+    }
+    if (counter < 5) {
+      commentsLoadBtn.classList.add('visually-hidden');
+    }
+  };
+
+  commentsLoadBtn.addEventListener('click', onCommentsLoadBtnClick);
 
   // Обработчик события для клика по фото
   var onPhotoClick = function (evt) {
