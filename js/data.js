@@ -16,7 +16,7 @@
     var objects = [];
     var numberOfObjects = photoPosts.length;
     var photoIndex = window.util.getRandomNumbers(numberOfObjects, 0, photoPosts.length - 1);
-    for (var i = 0; i <= length; i++) {
+    for (var i = 0; i < length; i++) {
       objects.push(photoPosts[photoIndex[i]]);
     }
     return objects;
@@ -34,7 +34,7 @@
   // Функция для заполнения фрагмента
   function createPictureItems(data) {
     var pictureFragment = document.createDocumentFragment();
-    for (var i = 0; i < data.length - 1; i++) {
+    for (var i = 0; i < data.length; i++) {
       pictureFragment.appendChild(createPhotoPost(data[i]));
     }
     picturesContainer.appendChild(pictureFragment);
@@ -97,8 +97,7 @@
   var onSortBtnClick = function (evt) {
     if (evt.target.tagName === 'BUTTON') {
       if (evt.target.id !== currentTargetId) {
-        var debouncedRenderFunction = window.debounce(renderFunction(evt));
-        debouncedRenderFunction();
+        debouncedRenderFunction.call(null, evt);
         disableBtn(evt);
         currentTargetId = evt.target.id;
       } else {
@@ -108,17 +107,17 @@
   };
 
   var renderFunction = function (evt) {
-    return function () {
-      if (currentFilter !== evt.target.id) {
-        var photoCardsCopy = photoCards.slice();
-        var sorted = idToSort[evt.target.id](photoCardsCopy);
-        clearPhotoCards();
-        createPictureItems(sorted);
-        window.showBigPicture.init();
-        currentFilter = evt.target.id;
-      }
-    };
+    if (currentFilter !== evt.target.id) {
+      var photoCardsCopy = photoCards.slice();
+      var sorted = idToSort[evt.target.id](photoCardsCopy);
+      clearPhotoCards();
+      createPictureItems(sorted);
+      window.showBigPicture.init();
+      currentFilter = evt.target.id;
+    }
   };
+
+  var debouncedRenderFunction = window.debounce(renderFunction);
 
   var clearPhotoCards = function () {
     var photosList = document.querySelectorAll('.picture');
