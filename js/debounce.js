@@ -15,8 +15,6 @@
       }
       // Новый вызов
       var newCall = function () {
-        // Очистка таймера после успешного вызова
-        lastTimeout = null;
         // Новая функция
         func.apply(null, args);
       };
