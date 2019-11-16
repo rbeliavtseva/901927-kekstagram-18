@@ -91,8 +91,6 @@
     }
   };
 
-  commentsLoadBtn.addEventListener('click', onCommentsLoadBtnClick);
-
   // Обработчик события для клика по фото
   var onPhotoClick = function (evt) {
     var photoSource = evt.target.getAttribute('class') === 'picture'
@@ -105,6 +103,7 @@
       fillBigCard(window.data.photoCards[index]);
       hide();
       document.addEventListener('keydown', onBigPicturePopupEscPress);
+      commentsLoadBtn.addEventListener('click', onCommentsLoadBtnClick);
     }
   };
 
@@ -127,6 +126,7 @@
   var closeBigPicturePopup = function () {
     bigPicture.classList.add('hidden');
     document.removeEventListener('keydown', onBigPicturePopupEscPress);
+    commentsLoadBtn.removeEventListener('click', onCommentsLoadBtnClick);
   };
 
   pictureCancel.addEventListener('click', closeBigPicturePopup);
