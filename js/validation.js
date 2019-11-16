@@ -12,11 +12,11 @@
   var hastagIsValid = true;
 
   // Функция находит два одинаковых элемента в массиве хэштегов
-  var findDuplicateHashtags = function (array, item) {
+  var findDuplicateHashtags = function (hashtagsToCheck, item) {
     var count = 0;
-    for (var i = 0; i < array.length; i++) {
+    for (var i = 0; i < hashtagsToCheck.length; i++) {
       // Поиск нечувствителен к регистру
-      if (array[i].toLowerCase() === item.toLowerCase()) {
+      if (hashtagsToCheck[i].toLowerCase() === item.toLowerCase()) {
         count++;
       }
     }
