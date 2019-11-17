@@ -14,6 +14,7 @@
     MIN: 0,
     MAX: 450
   };
+
   var filters = {
     none: {
       class: 'effects__preview--none',
