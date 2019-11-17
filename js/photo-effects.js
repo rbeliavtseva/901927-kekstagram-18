@@ -131,15 +131,15 @@
   };
 
   // Функция выполняет проверку: если фильтр Оригинал, то убирает ползунок
-  function toggleScale(selectedValue) {
+  var toggleScale = function (selectedValue) {
     return selectedValue !== 'none' ? effectLevel.classList.remove('hidden') : effectLevel.classList.add('hidden');
-  }
+  };
 
   // Функция добавления фильтра на изображение
-  function applyFilter(selectedValue) {
+  var applyFilter = function (selectedValue) {
     innerImage.classList.add(filters[selectedValue].class);
     applyFilterLevel(filters[selectedValue].min, filters[selectedValue].max, filters[selectedValue].style, 1, filters[selectedValue].postFix);
-  }
+  };
 
   // Функция рассчета глубины фильтра
   var applyFilterLevel = function (minFilterValue, maxFilterValue, styleName, positionValue, postFix) {
