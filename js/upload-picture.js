@@ -13,7 +13,6 @@
   // Отслеживаем событие изменения значения поля и открываем окно загрузки фото
   uploadField.addEventListener('change', function () {
     var file = uploadField.files[0];
-
     var fileName = file.name.toLowerCase();
 
     var matches = fileTypes.some(function (it) {

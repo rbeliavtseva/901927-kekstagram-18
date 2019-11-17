@@ -1,6 +1,10 @@
 'use strict';
 
 (function () {
+  var MAX_NUMBER_OF_OBJECTS = 25;
+  var FILTERED_NUMBER_OF_OBJECTS = 10;
+  var currentTargetId = 'filter-popular';
+  var currentFilter = 'filter-popular';
   var pictureTemplate = document.querySelector('#picture').content.querySelector('a');
   var errorTemplate = document.querySelector('#error').content.querySelector('section');
   var errorPopup = errorTemplate.cloneNode(true);
@@ -8,10 +12,7 @@
   var main = document.querySelector('main');
   var filtersSection = document.querySelector('.img-filters');
   var filters = document.querySelectorAll('.img-filters__button');
-
   var photoCards = [];
-  var MAX_NUMBER_OF_OBJECTS = 25;
-  var FILTERED_NUMBER_OF_OBJECTS = 10;
 
   // Функция генерирует массив объектов
   var shufflePhotos = function (photoPosts, length) {
@@ -36,7 +37,7 @@
   // Функция для заполнения фрагмента
   var createPictureItems = function (data) {
     var pictureFragment = document.createDocumentFragment();
-    for (var i = 0; i < data.length - 1; i++) {
+    for (var i = 0; i < data.length; i++) {
       pictureFragment.appendChild(createPhotoPost(data[i]));
     }
     picturesContainer.appendChild(pictureFragment);
@@ -107,23 +108,26 @@
     }
   };
 
-  var currentTargetId = 'filter-popular';
-
   var onSortButtonClick = function (evt) {
     if (evt.target.id !== currentTargetId) {
-      window.debounce(renderFunction.bind(null, evt), evt.target.id);
+      debouncedRenderFunction.call(null, evt);
       disableButton(evt);
       currentTargetId = evt.target.id;
     }
   };
 
   var renderFunction = function (evt) {
-    var photoCardsCopy = photoCards.slice();
-    var sorted = idToSort[evt.target.id](photoCardsCopy);
-    clearPhotoCards();
-    createPictureItems(sorted);
-    window.showBigPicture.init();
+    if (currentFilter !== evt.target.id) {
+      var photoCardsCopy = photoCards.slice();
+      var sorted = idToSort[evt.target.id](photoCardsCopy);
+      clearPhotoCards();
+      createPictureItems(sorted);
+      window.showBigPicture.init();
+      currentFilter = evt.target.id;
+    }
   };
+
+  var debouncedRenderFunction = window.debounce(renderFunction);
 
   var clearPhotoCards = function () {
     var photosList = document.querySelectorAll('.picture');
