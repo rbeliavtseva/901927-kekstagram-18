@@ -11,10 +11,10 @@
   };
 
   // Прячем блоки счётчика комментариев и загрузки новых комментариев
-  var hide = function () {
+  function hide() {
     var commentsCount = bigPicture.querySelector('.social__comment-count');
     commentsCount.classList.add('visually-hidden');
-  };
+  }
 
   // Функция поиска, возвращает индекс объекта при совпадении текущего src со значением поля url объекта
   var getPhotoIndexByUrl = function (url) {
@@ -26,7 +26,7 @@
     return -1;
   };
 
-  var generateSocialComment = function (comment, isHidden) {
+  function generateSocialComment(comment, isHidden) {
     // Создание элемента списка
     var newListElement = document.createElement('li');
     newListElement.className = isHidden === true ? 'social__comment visually-hidden' : 'social__comment';
@@ -45,7 +45,7 @@
     newListElement.appendChild(newImageElement);
     newListElement.appendChild(newCommentElement);
     return newListElement;
-  };
+  }
 
   // Функция заполнения увеличенной карточки фотографии
   var fillBigCard = function (arrayItem) {
