@@ -9,7 +9,7 @@
   var levelLine = document.querySelector('.effect-level__line');
   var effectDepth = document.querySelector('.effect-level__depth');
   var checkedValue;
-  var pinPosition = {
+  var PinPosition = {
     MIN: 0,
     MAX: 450
   };
@@ -55,7 +55,7 @@
   // Функция проверяет количество классов на элементе и добавляет фильтры
   var onRadioClick = function (evt) {
     checkedValue = evt.target.value;
-    changeFilterValue(pinPosition.MAX);
+    changeFilterValue(PinPosition.MAX);
     if (innerImage.classList.length === 2) {
       innerImage.classList.remove(innerImage.classList[1]);
     }
@@ -96,13 +96,13 @@
       moveEvt.preventDefault();
       var shift = startCoords - levelLine.getBoundingClientRect().left;
       // Проверям не выходит ли сдвиг за пределы линии
-      if (shift <= pinPosition.MIN) {
-        shift = pinPosition.MIN;
-      } else if (shift > pinPosition.MAX) {
-        shift = pinPosition.MAX;
+      if (shift <= PinPosition.MIN) {
+        shift = PinPosition.MIN;
+      } else if (shift > PinPosition.MAX) {
+        shift = PinPosition.MAX;
       }
       // Пропорционально высчитываем позицию
-      var position = shift / pinPosition.MAX;
+      var position = shift / PinPosition.MAX;
       // Обновляем позицию стартовой координаты
       startCoords = moveEvt.clientX;
       // Меняем UI
