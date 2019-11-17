@@ -20,8 +20,9 @@
     STATUS: 'Cтатус ответа: '
   };
 
-  var getXHR = function (succsessLoad, errorLoad) {
-    var xhr = new XMLHttpRequest();
+  var setXHRParameters = function (xhr, url, method, succsessLoad, errorLoad) {
+    xhr.open(method, url);
+
     xhr.responseType = 'json';
     xhr.timeout = TIMEOUT;
     xhr.addEventListener('load', function () {
@@ -41,26 +42,26 @@
         default:
           errorLoad(Message.STATUS + xhr.status + ' ' + xhr.statusText);
       }
+
       xhr.addEventListener('error', function () {
         errorLoad(Message.ERROR);
       });
-
-      xhr.addEventListener('timeout', function () {
-        errorLoad(Message.TIMEOUT_ERROR + xhr.timeout + 'мс');
-      });
     });
-    return xhr;
+
+    xhr.addEventListener('timeout', function () {
+      errorLoad(Message.TIMEOUT_ERROR + xhr.timeout + 'мс');
+    });
   };
 
   var sendGetRequest = function (url, onSuccess, onError) {
-    var xhr = getXHR(onSuccess, onError);
-    xhr.open('GET', url);
+    var xhr = new XMLHttpRequest();
+    setXHRParameters(xhr, url, 'GET', onSuccess, onError);
     xhr.send();
   };
 
   var sendPostRequest = function (url, data, onSuccess, onError) {
-    var xhr = getXHR(onSuccess, onError);
-    xhr.open('POST', url);
+    var xhr = new XMLHttpRequest();
+    setXHRParameters(xhr, url, 'POST', onSuccess, onError);
     xhr.send(data);
   };
 

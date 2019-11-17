@@ -8,27 +8,41 @@
   var uploadField = imageUploadWindow.querySelector('#upload-file');
   var imageUpload = imageUploadWindow.querySelector('.img-upload__overlay');
   var imageUploadCancel = imageUpload.querySelector('#upload-cancel');
+  var fileTypes = ['gif', 'jpg', 'jpeg', 'png'];
 
   // Отслеживаем событие изменения значения поля и открываем окно загрузки фото
   uploadField.addEventListener('change', function () {
-    imageUpload.classList.remove('hidden');
-    document.addEventListener('keydown', onPopupEscPress);
-    window.photoEffects.effectLevel.classList.add('hidden');
-    window.scalePicture.controlValue.value = '100%';
-    // window.photoEffects.sliderPin.addEventListener('mousedown', window.photoEffects.getPosition);
-    window.scalePicture.addControlsEventListeners();
-    window.validation.textHashtags.addEventListener('input', window.validation.checkHashtagValidity);
-    window.photoEffects.addRadioEventListeners();
+    var file = uploadField.files[0];
+
+    var fileName = file.name.toLowerCase();
+
+    var matches = fileTypes.some(function (it) {
+      return fileName.endsWith(it);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function () {
+        window.photoEffects.imagePreview.children[0].src = reader.result;
+        imageUpload.classList.remove('hidden');
+        document.addEventListener('keydown', onPopupEscPress);
+        window.photoEffects.effectLevel.classList.add('hidden');
+        window.scalePicture.controlValue.value = '100%';
+        window.scalePicture.addControlsEventListeners();
+        window.validation.textHashtags.addEventListener('input', window.validation.checkHashtagValidity);
+        window.photoEffects.addRadioEventListeners();
+      });
+
+      reader.readAsDataURL(file);
+    }
   });
 
   // Функция закрытия по клавише Esc, не срабатывает, когда фокус на поле хэштегов
   var onPopupEscPress = function (evt) {
-    if (evt.target === window.validation.textHashtags) {
-      return;
-    } else if (evt.target === window.validation.userCommentField) {
+    if (evt.target === window.validation.textHashtags || evt.target === window.validation.userCommentField) {
       return;
     }
-
     if (evt.keyCode === window.util.ESC_KEYCODE) {
       closePopup();
     }
@@ -49,11 +63,12 @@
     window.validation.textHashtags.removeEventListener('input', window.validation.checkHashtagValidity);
     window.photoEffects.removeRadioEventListeners();
     clearValues();
-    window.validation.clearFormValidation();
+    window.validation.clearForm();
     window.scalePicture.clearDefault();
     if (window.photoEffects.imagePreview.classList.length === 2) {
       window.photoEffects.imagePreview.classList.remove(window.photoEffects.imagePreview.classList[1]);
     }
+    window.photoEffects.imagePreview.children[0].src = null;
   };
 
   imageUploadCancel.addEventListener('click', closePopup);

@@ -27,7 +27,10 @@
   var checkHashtagValidity = function () {
     hastagIsValid = true;
     hashtagValue = textHashtags.value;
-    hashtags = hashtagValue.split(' ');
+    hashtags = hashtagValue.split(' ')
+      .filter(function (item) {
+        return item.length !== 0;
+      });
     textHashtags.setCustomValidity('');
     if (hashtags.length <= 5) {
       for (var i = 0; i < hashtags.length; i++) {
@@ -39,7 +42,10 @@
           textHashtags.setCustomValidity('Хэш-тег должен начинаться с решётки');
           hastagIsValid = false;
           break;
-        } else if (hashtags[i].split('#').length < 1) {
+        } else if (hashtags[i].split('#')
+            .filter(function (item) {
+              return item.length !== 0;
+            }).length > 1) {
           textHashtags.setCustomValidity('Хэш-теги должны разделяться пробелами');
           hastagIsValid = false;
           break;
@@ -61,12 +67,13 @@
 
   var onSubmitButtonClick = function () {
     if (!hastagIsValid) {
-      window.validation.textHashtags.style.outline = '3px solid red';
+      textHashtags.style.outline = '3px solid red';
     }
   };
 
-  var clearFormValidation = function () {
-    window.validation.textHashtags.style.outline = 'none';
+  var clearForm = function () {
+    textHashtags.style.outline = 'none';
+    textHashtags.setCustomValidity('');
   };
 
   // Валидация комментариев
@@ -79,16 +86,15 @@
   });
 
   textHashtags.addEventListener('input', function () {
-    if (textHashtags.value === '') {
-      clearFormValidation();
-    }
+    clearForm();
   });
+
   submitButton.addEventListener('click', onSubmitButtonClick);
 
   window.validation = {
     textHashtags: textHashtags,
     userCommentField: userCommentField,
     checkHashtagValidity: checkHashtagValidity,
-    clearFormValidation: clearFormValidation
+    clearForm: clearForm
   };
 })();

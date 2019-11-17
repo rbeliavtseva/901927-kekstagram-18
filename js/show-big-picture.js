@@ -2,21 +2,21 @@
 
 (function () {
   var bigPicture = document.querySelector('.big-picture');
-  var pictureSmall = [];
+  var picturesSmall = [];
   var pictureCancel = document.querySelector('.big-picture__cancel');
   var commentField = document.querySelector('.social__footer-text');
 
-  function showPicture() {
+  var showPicture = function () {
     bigPicture.classList.remove('hidden');
-  }
+  };
 
   // Прячем блоки счётчика комментариев и загрузки новых комментариев
-  function hide() {
+  var hide = function () {
     var commentsLoader = bigPicture.querySelector('.comments-loader');
     var commentsCount = bigPicture.querySelector('.social__comment-count');
     commentsCount.classList.add('visually-hidden');
     commentsLoader.classList.add('visually-hidden');
-  }
+  };
 
   // Функция поиска, возвращает индекс объекта при совпадении текущего src со значением поля url объекта
   var getPhotoIndexByUrl = function (url) {
@@ -28,7 +28,7 @@
     return -1;
   };
 
-  function generateSocialComment(comment) {
+  var generateSocialComment = function (comment) {
     // Создание элемента списка
     var newListElement = document.createElement('li');
     newListElement.className = 'social__comment';
@@ -47,10 +47,10 @@
     newListElement.appendChild(newImageElement);
     newListElement.appendChild(newCommentElement);
     return newListElement;
-  }
+  };
 
   // Функция заполнения увеличенной карточки фотографии
-  function fillBigCard(arrayItem) {
+  var fillBigCard = function (arrayItem) {
     // Отображаем большую фотографию
     var bigImage = bigPicture.querySelector('.big-picture__img').children[0];
     bigImage.src = arrayItem.url;
@@ -70,7 +70,7 @@
     }
     // Вставляем фрагмент в разметку
     socialComments.appendChild(bigPictureFragment);
-  }
+  };
 
   // Обработчик события для клика по фото
   var onPhotoClick = function (evt) {
@@ -121,8 +121,8 @@
   };
 
   var init = function () {
-    pictureSmall = document.querySelectorAll('.picture');
-    addPhotoEventListeners(pictureSmall);
+    picturesSmall = document.querySelectorAll('.picture');
+    addPhotoEventListeners(picturesSmall);
   };
 
   window.showBigPicture = {
