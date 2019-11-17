@@ -9,6 +9,7 @@
   var levelLine = document.querySelector('.effect-level__line');
   var effectDepth = document.querySelector('.effect-level__depth');
   var checkedValue;
+
   var PinPosition = {
     MIN: 0,
     MAX: 450
